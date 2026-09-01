@@ -1,3 +1,18 @@
+# Diretório local do Terraform
+.terraform/
+
+# Estado da infraestrutura
 *.tfstate
+*.tfstate.*
 *.tfstate.backup
-.terraform
+crash.log
+crash.*.log
+
+# Credenciais da AWS
+.aws/
+credentials
+*.pem
+
+# Arquivos de sistema
+.DS_Store
+.vscode/

@@ -7,7 +7,21 @@ Projeto desenvolvido em sala para praticar Infraestrutura como Código (IaC) uti
 - `main.tf` — declaração do provider AWS e do recurso `aws_s3_bucket`.
 - `variables.tf` — declaração das variáveis `region` e `environment`.
 - `terraform.tfvars` — valores reais atribuídos às variáveis.
+- `data.tf` — consulta informações que já existem na conta AWS (`account_id` e região ativa), sem criar recursos novos.
+- `outputs.tf` — expõe no terminal, após o `apply`, dados do recurso criado (nome do bucket, ARN, account id e região usada).
 - `.terraform.lock.hcl` — trava as versões dos providers (versionado propositalmente).
+
+## Data Sources e Outputs
+
+O `data.tf` usa dois data sources para evitar "hardcodar" valores que já existem no provedor:
+
+- `data.aws_caller_identity.current` — retorna dados da conta AWS autenticada no momento (usado para o `account_id`).
+- `data.aws_region.current` — retorna a região configurada no provider.
+
+O `outputs.tf` expõe essas informações (e dados do bucket) para consulta rápida no terminal, sem entrar no console da AWS:
+
+- `bucket_name` e `bucket_arn` — vêm diretamente do recurso `aws_s3_bucket.bucket-aponti`.
+- `account_id` e `region_used` — vêm dos data sources acima.
 
 ## Processo de conexão com a Cloud (AWS)
 
@@ -48,4 +62,4 @@ O `terraform plan`/`apply` não foram executados de fato por falta de credenciai
 
 - `.terraform/` e arquivos de estado (`*.tfstate`) não devem ser versionados, pois são gerados localmente e podem conter dados sensíveis.
 - `.terraform.lock.hcl` **deve** ser versionado, pois garante que todos que executem o projeto utilizem exatamente a mesma versão do provider, evitando o problema de "na minha máquina funciona".
-- Mesmo quando um `.tfvars` não contém dados sensíveis, é prática comum ignorá-lo por padrão e versionar um `terraform.tfvars.example` com valores fictícios, como medida preventiva de segurança.
+- Mesmo quando um `.tfvars` não contém dados sensíveis, é uma prática comum ignorá-lo por padrão e versionar um `terraform.tfvars.example` com valores fictícios, como medida preventiva de segurança.
