@@ -10,14 +10,14 @@ pipeline {
                 }
             }
         }
-        stage("build") {
+        stage("Build") {
             steps {
                 dir("pipeline-jenkins-nodejs") {
                     bat "npm run build"
                 }
             }
         }
-        stage("teste") {
+        stage("Test") {
             steps {
                 dir("pipeline-jenkins-nodejs") {
                     bat "npm test"
