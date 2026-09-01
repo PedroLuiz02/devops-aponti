@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages{
+        stage("Install"){
+            steps{
+                echo "Instalando dependências"
+                dir("pipeline-jenkins-nodejs") {
+                    bat "npm install"
+                }
+            }
+        }
+        stage("build") {
+            steps {
+                dir("pipeline-jenkins-nodejs") {
+                    bat "npm run build"
+                }
+            }
+        }
+        stage("teste") {
+            steps {
+                dir("pipeline-jenkins-nodejs") {
+                    bat "npm test"
+                }
+            }
+        }
+    }
+    post { 
+        success { 
+            echo 'Sucesso'
+        }
+        failure { 
+            echo 'Falha'
+        }
+    }
+}
