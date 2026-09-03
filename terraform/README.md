@@ -1,65 +1,48 @@
-# Atividade Terraform - Provisionamento de Bucket S3 (AWS)
+# Atividade Terraform - Provisionamento Multi-Cloud
 
-Projeto desenvolvido em sala para praticar Infraestrutura como Código (IaC) utilizando Terraform, provisionando um bucket S3 na AWS.
+Projeto desenvolvido em sala para praticar Infraestrutura como Código (IaC) utilizando Terraform, provisionando um recurso de armazenamento equivalente em diferentes provedores de nuvem.
 
-## Estrutura do projeto
+## Estrutura de pastas
 
-- `main.tf` — declaração do provider AWS e do recurso `aws_s3_bucket`.
-- `variables.tf` — declaração das variáveis `region` e `environment`.
-- `terraform.tfvars` — valores reais atribuídos às variáveis.
-- `data.tf` — consulta informações que já existem na conta AWS (`account_id` e região ativa), sem criar recursos novos.
-- `outputs.tf` — expõe no terminal, após o `apply`, dados do recurso criado (nome do bucket, ARN, account id e região usada).
-- `.terraform.lock.hcl` — trava as versões dos providers (versionado propositalmente).
-
-## Data Sources e Outputs
-
-O `data.tf` usa dois data sources para evitar "hardcodar" valores que já existem no provedor:
-
-- `data.aws_caller_identity.current` — retorna dados da conta AWS autenticada no momento (usado para o `account_id`).
-- `data.aws_region.current` — retorna a região configurada no provider.
-
-O `outputs.tf` expõe essas informações (e dados do bucket) para consulta rápida no terminal, sem entrar no console da AWS:
-
-- `bucket_name` e `bucket_arn` — vêm diretamente do recurso `aws_s3_bucket.bucket-aponti`.
-- `account_id` e `region_used` — vêm dos data sources acima.
-
-## Processo de conexão com a Cloud (AWS)
-
-Durante o desenvolvimento, o projeto foi estruturado para se conectar à AWS através do provider oficial `hashicorp/aws`, declarado no bloco `terraform { required_providers { } }`.
-
-Para que o Terraform consiga de fato criar recursos na AWS, é necessário fornecer credenciais válidas. As formas mais comuns de autenticação são:
-
-1. **AWS CLI configurada via terminal** — usando o comando `aws configure`, que solicita interativamente:
-   - Access Key ID
-   - Secret Access Key
-   - Região padrão
-   - Formato de saída (ex: json)
-
-   Esses dados são salvos em dois arquivos dentro da pasta oculta `.aws`, na pasta do usuário:
-   - `~/.aws/credentials` — guarda as chaves de acesso.
-   - `~/.aws/config` — guarda região e formato de saída.
-
-2. **Variáveis de ambiente do sistema** — definindo `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY` diretamente no terminal/sessão.
-
-3. **IAM Role** — usada quando o Terraform roda dentro de uma instância EC2 real, que já possui uma role vinculada (não é o caso deste projeto, já que ele roda localmente).
-
-### Tentativa de execução e erro encontrado
-
-Ao rodar `terraform plan` sem nenhuma conta AWS configurada, se obtém o erro:
+O repositório está organizado em uma pasta por provedor de nuvem, cada uma com seu próprio conjunto de arquivos Terraform independente:
 
 ```
-Error: No valid credential sources found
-Error: failed to refresh cached credentials, no EC2 IMDS role found...
+devops-aponti/
+├── .gitignore
+├── README.md
+├── aws/
+│   └── README.md
+└── gcp/
+    └── README.md
 ```
 
-Esse erro confirma que o Terraform tentou localizar credenciais em todas as fontes possíveis (variáveis de ambiente, arquivos `.aws`, role de instância) e não encontrou nenhuma 
+Cada pasta contém os mesmos seis arquivos, seguindo o padrão definido em sala:
 
-A validação do projeto foi feita através do comando `terraform validate`, que verifica a **sintaxe e a consistência do código** sem exigir credenciais nem se conectar à AWS. 
+- `main.tf` — provider e recurso principal
+- `data.tf` — data sources (consultas a informações já existentes no provedor)
+- `variables.tf` — declaração das variáveis
+- `terraform.tfvars` — valores reais atribuídos às variáveis
+- `outputs.tf` — informações expostas após o `terraform apply`
+- `README.md` — explicação detalhada daquele provedor específico
 
-O `terraform plan`/`apply` não foram executados de fato por falta de credenciais válidas.
+## Por que pastas separadas em vez de um único projeto?
+
+Cada nuvem tem seu próprio `provider`, suas próprias credenciais de autenticação e seu próprio ciclo de vida de infraestrutura. Separar por pasta permite:
+
+- Rodar `terraform init/plan/apply` de forma independente em cada nuvem, sem misturar estados.
+- Deixar claro, para o leitor do repositório, qual conjunto de arquivos pertence a qual provedor.
+- Reaproveitar a mesma lógica (bucket de armazenamento) para comparar como cada nuvem resolve o mesmo problema.
+
+## Equivalência de recursos entre os provedores
+
+| Conceito                    | AWS                                            | Azure                                                          | GCP                          |
+|------------------------------|-------------------------------------------------|-----------------------------------------------------------------|-------------------------------|
+| Recurso de armazenamento      | `aws_s3_bucket`                                 | `azurerm_storage_account` + `azurerm_storage_container`         | `google_storage_bucket`       |
+| Agrupador obrigatório         | não existe                                       | `azurerm_resource_group` (obrigatório antes de qualquer recurso) | projeto GCP (já existe previamente) |
+| Pares chave-valor de organização | `tags`                                        | `tags`                                                           | `labels`                       |
+| Identidade/conta (data source) | `aws_caller_identity`                          | `azurerm_client_config`                                          | `google_project`               |
 
 ## Boas práticas de versionamento
 
 - `.terraform/` e arquivos de estado (`*.tfstate`) não devem ser versionados, pois são gerados localmente e podem conter dados sensíveis.
-- `.terraform.lock.hcl` **deve** ser versionado, pois garante que todos que executem o projeto utilizem exatamente a mesma versão do provider, evitando o problema de "na minha máquina funciona".
-- Mesmo quando um `.tfvars` não contém dados sensíveis, é uma prática comum ignorá-lo por padrão e versionar um `terraform.tfvars.example` com valores fictícios, como medida preventiva de segurança.
+- `.terraform.lock.hcl` **deve** ser versionado em cada pasta, pois garante que todos que executem o projeto utilizem exatamente a mesma versão do provider.

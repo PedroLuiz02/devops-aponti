@@ -1,4 +1,5 @@
-# Ferramenta IAC Infraestrutura como Código (IaC) que serve para provisionar, alterar e versionar recursos de TI de forma automatizada e segura.
+# Ferramenta IAC Infraestrutura como Código (IaC) que serve para provisionar, alterar e versionar 
+# recursos de TI de forma automatizada e segura.
 terraform {
     # Declara quais provedores o terraform requer, para que possa instalá-los e utilizá-los.
     required_providers {
@@ -19,7 +20,8 @@ provider "aws" {
 resource "aws_s3_bucket" "bucket-aponti" {
     bucket = "bucket-aponti"
 
-    # Servem para organizar, monitorar custos e identificar recursos na nuvem por meio de pares de chave-valor. Além de evitar repetir as mesmas tags em dezenas de recursos.
+    # Servem para organizar, monitorar custos e identificar recursos na nuvem por meio de pares de chave-valor. 
+    # Além de evitar repetir as mesmas tags em dezenas de recursos.
     tags = {
         Name = "My Bucket"
         Environment = var.environment

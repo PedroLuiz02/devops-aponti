@@ -13,6 +13,11 @@ crash.*.log
 credentials
 *.pem
 
+# Credenciais GCP
+*-key.json
+credentials.json
+application_default_credentials.json
+
 # Arquivos de sistema
 .DS_Store
 .vscode/
