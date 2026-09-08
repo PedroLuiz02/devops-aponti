@@ -18,16 +18,8 @@ jobs:
       - name: Instalacao de dependencias
         run: "npm install"
 
-  Build:
-    runs-on: "ubuntu-latest"
-
-    steps:
-      - name: Compilar Projeto
+      - name: Build
         run: npm run build
 
-  Test:
-    runs-on: "ubuntu-latest"
-
-    steps:
-      - name: Testes do Projeto
+      - name: Test
         run: npm test
