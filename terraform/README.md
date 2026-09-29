@@ -12,6 +12,8 @@ devops-aponti/
 ├── README.md
 ├── aws/
 │   └── README.md
+├── azure/
+│   └── README.md
 └── gcp/
     └── README.md
 ```
@@ -30,7 +32,7 @@ Cada pasta contém os mesmos seis arquivos, seguindo o padrão definido em sala:
 Cada nuvem tem seu próprio `provider`, suas próprias credenciais de autenticação e seu próprio ciclo de vida de infraestrutura. Separar por pasta permite:
 
 - Rodar `terraform init/plan/apply` de forma independente em cada nuvem, sem misturar estados.
-- Deixar claro, para o leitor do repositório, qual conjunto de arquivos pertence a qual provedor.
+- Deixar claro, para quem for ler o repositório, qual conjunto de arquivos pertence a qual provedor.
 - Reaproveitar a mesma lógica (bucket de armazenamento) para comparar como cada nuvem resolve o mesmo problema.
 
 ## Equivalência de recursos entre os provedores
@@ -42,7 +44,8 @@ Cada nuvem tem seu próprio `provider`, suas próprias credenciais de autentica�
 | Pares chave-valor de organização | `tags`                                        | `tags`                                                           | `labels`                       |
 | Identidade/conta (data source) | `aws_caller_identity`                          | `azurerm_client_config`                                          | `google_project`               |
 
-## Boas práticas de versionamento
+## Boas práticas de versionamento (válidas para todo o repositório)
 
+- Um único `.gitignore` na raiz: padrões como `.terraform/` e `*.tfstate` se aplicam automaticamente a todas as subpastas (`aws/`, `azure/`, `gcp/`), sem precisar duplicar o arquivo em cada uma.
 - `.terraform/` e arquivos de estado (`*.tfstate`) não devem ser versionados, pois são gerados localmente e podem conter dados sensíveis.
 - `.terraform.lock.hcl` **deve** ser versionado em cada pasta, pois garante que todos que executem o projeto utilizem exatamente a mesma versão do provider.
