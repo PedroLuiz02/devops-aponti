@@ -1,0 +1,12 @@
+{
+  "name": "github-secrets-demo",
+  "version": "1.0.0",
+  "description": "Projeto simples para demonstrar GitHub Secrets",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

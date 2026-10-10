@@ -1,0 +1,31 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  executar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências
+        run: |
+          cd app
+          npm install
+
+      - name: Executar aplicação
+        env:
+          MENSAGEM_SECRETA: "Minha mensagem secreta"
+        run: |
+          cd app
+          node server.js
