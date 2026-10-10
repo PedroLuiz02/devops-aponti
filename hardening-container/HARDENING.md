@@ -56,7 +56,7 @@ Podemos usar uma pipeline, como o GitHub Actions, que roda sozinha toda vez que 
 **Medidas adicionais em Kubernetes?**
 O Kubernetes tem recursos de segurança que reforçam o que já foi feito no Docker, como Secrets, limites de recursos e RBAC.
 
-## 4. Evidências da validação
+## 4. Evidências
 
 ### 4.1 Dockerfile
 
