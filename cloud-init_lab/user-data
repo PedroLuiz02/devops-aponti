@@ -1,0 +1,41 @@
+#cloud-config
+
+# Atualiza a lista de pacotes antes das instalações
+package_update: true
+
+# Cria um usuário administrador
+users:
+  - name: user
+    gecos: user com acesso total de administrador
+    groups: sudo
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    lock_passwd: true
+    ssh_authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM2xexWoI6wXhrt3U4IkGnFLTiuWl3BcQhOPII/MHNfT aluno@DESKTOP-IU48MN8"
+
+# Instala os softwares declarativamente
+packages:
+  - docker.io
+  - nginx
+
+# Cria uma página personalizada
+write_files:
+  - path: /var/www/html/index.html
+    owner: user
+    permissions: "0644"
+    defer: true
+    content: |
+      1° linha do arquivo
+      2° linha do arquivo
+      3° linha do arquivo
+      
+
+# Executa comandos após as etapas de configuração
+runcmd:
+  - systemctl enable --now docker
+  - systemctl enable --now nginx
+  - usermod -aG docker user
+
+# Mensagem final registrada nos logs
+final_message: "<=== Fim do provisionamento ===>"
